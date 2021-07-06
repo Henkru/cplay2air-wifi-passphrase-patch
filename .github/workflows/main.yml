@@ -15,12 +15,13 @@ jobs:
           wget https://releases.linaro.org/components/toolchain/binaries/5.1-2015.08/arm-linux-gnueabi/gcc-linaro-5.1-2015.08-x86_64_arm-linux-gnueabi.tar.xz
           tar xvf gcc-linaro-5.1-2015.08-x86_64_arm-linux-gnueabi.tar.xz
           export PATH=$PWD/gcc-linaro-5.1-2015.08-x86_64_arm-linux-gnueabi/bin:$PATH
+      - name: Update PATH
+        run: |
+          echo "$GITHUB_WORKSPACE/toolchain/gcc-linaro-5.1-2015.08-x86_64_arm-linux-gnueabi/bin" >> $GITHUB_PATH
       - name: Checkout
         uses: actions/checkout@v1
       - name: Build
         run: |
-          export PATH=$PWD/toolchain/gcc-linaro-5.1-2015.08-x86_64_arm-linux-gnueabi/bin:$PATH
-          cd $GITHUB_WORKSPACE
           ./build.sh
       - name: Release
         uses: softprops/action-gh-release@v1
