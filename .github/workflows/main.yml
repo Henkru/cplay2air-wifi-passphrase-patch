@@ -8,20 +8,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Install toolchain
-        run: |
-          mkdir toolchain
-          cd toolchain
-          wget https://releases.linaro.org/components/toolchain/binaries/5.1-2015.08/arm-linux-gnueabi/gcc-linaro-5.1-2015.08-x86_64_arm-linux-gnueabi.tar.xz
-          tar xvf gcc-linaro-5.1-2015.08-x86_64_arm-linux-gnueabi.tar.xz
-          export PATH=$PWD/gcc-linaro-5.1-2015.08-x86_64_arm-linux-gnueabi/bin:$PATH
-      - name: Update PATH
-        run: |
-          echo "$GITHUB_WORKSPACE/toolchain/gcc-linaro-5.1-2015.08-x86_64_arm-linux-gnueabi/bin" >> $GITHUB_PATH
       - name: Checkout
         uses: actions/checkout@v1
-      - name: Build
+      - name: Install toolchain and build
         run: |
+          mkdir $GITHUB_WORKSPACE/toolchain
+          cd $GITHUB_WORKSPACE/toolchain
+          wget https://releases.linaro.org/components/toolchain/binaries/5.1-2015.08/arm-linux-gnueabi/gcc-linaro-5.1-2015.08-x86_64_arm-linux-gnueabi.tar.xz
+          tar xf gcc-linaro-5.1-2015.08-x86_64_arm-linux-gnueabi.tar.xz
+          echo "$GITHUB_WORKSPACE/toolchain/gcc-linaro-5.1-2015.08-x86_64_arm-linux-gnueabi/bin" >> $GITHUB_PATH
+          cd ..
           ./build.sh
       - name: Release
         uses: softprops/action-gh-release@v1
