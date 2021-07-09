@@ -136,7 +136,7 @@ void __attribute__((constructor)) run_me_at_load_time()
             return;
         }
 
-        // Calculate the absolute location for patch location
+        // Calculate the absolute address for patch location
         void *passwd = (void*)(BASE_ADDR + PASSWD_OFFSET);
 
         printf("[+] Original value:\n");
