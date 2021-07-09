@@ -4,13 +4,13 @@
 
 These vulnerabilities expose the device and the car to unnecessary risk since an attacker could too easily connect to the dongle and replace the stock firmware. This attack also gives the attacker easy access to the car's USB port that is usually a [great starting point](https://hitcon.org/2018/CMT/slide-files/d2_s0_r0_keynote.pdf) for compromising the infotainment system.
 
-This patch allows you to change the non-secure default password of your choice, which reduces the risk of being compromised. However, I am not convinced should anyone use this device even with this patch.
+This patch allows you to change the non-secure default password to a password of your choice, which reduces the risk of being compromised. However, I am not convinced should anyone use the device even with this patch.
 
 ## Requirements
 
 A CPLAY2air/Carlinkit dongle running ludwig-v's [custom firmware](https://github.com/ludwig-v/wireless-carplay-dongle-reverse-engineering/tree/master/Custom_Firmware). At the moment, the only supported version is `2021.03.06`.
 
-If you are running a different version, check if the FW image contains the same version of the `/usr/sbin/ARMiPhoneIAP2` binary: `sha1:92d16ccb53d2e74ff4e7512bc78ecc851d72b189`. If the same binary is used, then this patch should work directly without any modification. Otherwise you have to build a new version of the patch with the [correct address](https://github.com/Henkru/cplay2air-wifi-passphrase-patch/blob/main/inject.c#L11) of the passshrase location.
+If you are running a different firmware version, check if the FW image contains the same version of the `/usr/sbin/ARMiPhoneIAP2` binary: `sha1:92d16ccb53d2e74ff4e7512bc78ecc851d72b189`. If the same binary is used, then this patch should work directly without any modification. Otherwise you have to build a new version of the patch with the [correct address](https://github.com/Henkru/cplay2air-wifi-passphrase-patch/blob/main/inject.c#L11) of the passphrase location.
 
 ## Installation
 0. Download the pre-compiled [binaries](https://github.com/Henkru/cplay2air-wifi-passphrase-patch/releases) or build your own
@@ -19,7 +19,7 @@ If you are running a different version, check if the FW image contains the same 
    * `proxy.sh`: The shell script which loads the patch.
    * `U2W.sh`: The installer script.
 2. Modify the value of the `PASSPHRASE` variable in `U2W.sh` to contain the new password. **Note: The password has to be exactly 8 characters.**
-3. Connect the CPLAY2air/Carlinkit device to a power outlet and wait for it is booting
+3. Connect the CPLAY2air/Carlinkit device to a power outlet and wait until the device has booted
 4. Connect the USB stick to the device and wait 10 seconds
 5. Unplug the USB stick and reboot the device
 
@@ -33,7 +33,7 @@ The `ARMiPhoneIAP2` binary leverages an unidentified ELF binary packer that uses
 
 ## Let's find the address of a passphrase
 
-This section contains documentation on how to obtain the memory address of the passphrase. You require  [SSH access](https://github.com/ludwig-v/wireless-carplay-dongle-reverse-engineering/tree/master/Custom_Firmware/Scripts/Dropbear) to the dongle, and the [toolchain](https://github.com/ludwig-v/wireless-carplay-dongle-reverse-engineering/blob/master/Custom_Firmware/Scripts/Dropbear/NOTES.md) to build binaries (`strace`, `gdbserver`, etc.) for the device.
+This section contains documentation on how to obtain the memory address of the passphrase. You require [SSH access](https://github.com/ludwig-v/wireless-carplay-dongle-reverse-engineering/tree/master/Custom_Firmware/Scripts/Dropbear) to the dongle, and the [toolchain](https://github.com/ludwig-v/wireless-carplay-dongle-reverse-engineering/blob/master/Custom_Firmware/Scripts/Dropbear/NOTES.md) to build binaries (`strace`, `gdbserver`, etc.) for the device.
 
 Before we can patch the passphrase, we have to locate the memory location of it. First, let's find some point of execution when the packer has done its magic, and the actual application is running. Based on the `strace` output, the first `brk` syscall happens between the execution of the packer and the actual binary, as shown below.
 
@@ -132,7 +132,7 @@ Mapped address spaces:
 pwndbg> dump memory ~/code.dmp 0x10000 0x6f000
 ```
 
-As shown in the above output, the packer replaced the content of the original text section (`0x1000`), and we can definitely spot the default password from a strings of the dump.
+As shown in the above output, the packer replaced the content of the original text section (`0x1000`), and we can spot the default password from a strings of the dump.
 
 ```bash
 $ string code.dmp
@@ -148,7 +148,7 @@ WIFISSID
 <...snipped...>
 ```
 
-The relative address of the passphrase is `0x4f580` as show below, and a help of math we are able to figure out the absolute path: `0x10000 + 0x4f580 = 0x5f580`.
+The relative address of the passphrase is `0x4f580` as show below, and with a help of math we are able to figure out the absolute path: `0x10000 + 0x4f580 = 0x5f580`.
 
 ```bash
 $ xxd code.dmp
