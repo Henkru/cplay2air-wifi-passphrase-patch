@@ -10,10 +10,10 @@ This patch allows you to change the non-secure default password of your choice, 
 
 A CPLAY2air/Carlinkit dongle running ludwig-v's [custom firmware](https://github.com/ludwig-v/wireless-carplay-dongle-reverse-engineering/tree/master/Custom_Firmware). At the moment, the only supported version is `2021.03.06`.
 
-If you are running a different version, check if the FW image contains the same version of the `/usr/sbin/ARMiPhoneIAP2` binary: `sha1:92d16ccb53d2e74ff4e7512bc78ecc851d72b189 `. If the same binary is used, then this patch should work directly without any modification. Otherwise you have to build a new version of the patch with the correct address of the passshrase location.
+If you are running a different version, check if the FW image contains the same version of the `/usr/sbin/ARMiPhoneIAP2` binary: `sha1:92d16ccb53d2e74ff4e7512bc78ecc851d72b189`. If the same binary is used, then this patch should work directly without any modification. Otherwise you have to build a new version of the patch with the [correct address](https://github.com/Henkru/cplay2air-wifi-passphrase-patch/blob/main/inject.c#L11) of the passshrase location.
 
 ## Installation
-
+0. Download the pre-compiled [binaries](https://github.com/Henkru/cplay2air-wifi-passphrase-patch/releases) or build your own
 1. Copy `inject.o`, `proxy.sh` and `U2W.sh` to a USB stick
    * `inject.o`: The patch which overwrites the default password.
    * `proxy.sh`: The shell script which loads the patch.
